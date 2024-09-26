@@ -59,6 +59,10 @@ public class BorrarFragment extends Fragment {
         borrarViewModel.getmErrorMsj().observe(getViewLifecycleOwner(), msj -> {
             binding.tvMsj.setText(msj);
         });
+
+        borrarViewModel.getBotonBorrarVisibilidad().observe(getViewLifecycleOwner(), visibilidad -> {
+            binding.btBorrar.setVisibility(visibilidad);
+        });
     }
     private void limpiar() {
         binding.etBuscar.setText("");

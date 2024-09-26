@@ -1,14 +1,12 @@
 package com.softnahu.inmueblerecuperatoriovargas.ui.borrar;
 
 import android.app.Application;
-import android.renderscript.ScriptGroup;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.softnahu.inmueblerecuperatoriovargas.MainActivity;
 import com.softnahu.inmueblerecuperatoriovargas.model.Inmueble;
@@ -17,36 +15,33 @@ public class BorrarViewModel extends AndroidViewModel {
     private MutableLiveData<Inmueble> inmuebleEncontrado;
     private MutableLiveData<String> mErrorMsj;
     private MutableLiveData<Boolean> inmuebleEliminado;
-
+    private MutableLiveData<Integer> botonBorrarVisibilidad;
 
     public BorrarViewModel(@NonNull Application application) {
         super(application);
         inmuebleEncontrado = new MutableLiveData<>();
-        mErrorMsj = new MutableLiveData<>(); // Inicializa el mensaje de error
-        inmuebleEliminado = new MutableLiveData<>(false); // Inicializa a false si no se ha eliminado nada
+        mErrorMsj = new MutableLiveData<>();
+        inmuebleEliminado = new MutableLiveData<>(false);
+        botonBorrarVisibilidad = new MutableLiveData<>(View.GONE);
     }
-
 
     public LiveData<Inmueble> getInmuebleEncontrado() {
-        if (inmuebleEncontrado == null) {
-            inmuebleEncontrado = new MutableLiveData<>();
-        }
         return inmuebleEncontrado;
     }
-    public MutableLiveData<String> getmErrorMsj() {
-        if (mErrorMsj == null) {
-            mErrorMsj = new MutableLiveData<>();
-        }
+
+    public LiveData<String> getmErrorMsj() {
         return mErrorMsj;
     }
 
     public LiveData<Boolean> getInmuebleEliminado() {
-        if (inmuebleEliminado == null) {
-            inmuebleEliminado = new MutableLiveData<>();
-        }
         return inmuebleEliminado;
     }
-    /*********************************/
+
+
+    public LiveData<Integer> getBotonBorrarVisibilidad() {
+        return botonBorrarVisibilidad;
+    }
+
     public void buscarInmueble(String codigo) {
         if (codigo == null || codigo.isEmpty()) {
             mErrorMsj.setValue("El código no puede estar vacío.");
@@ -58,19 +53,21 @@ public class BorrarViewModel extends AndroidViewModel {
         }
         boolean inmuebleEncontradoFlag = false;
         for (Inmueble inmueble : MainActivity.inmuebles) {
+
             if (inmueble != null && inmueble.getCodigo() != null && inmueble.getCodigo().equals(codigo)) {
                 inmuebleEncontrado.setValue(inmueble);
                 inmuebleEncontradoFlag = true;
                 break;
             }
         }
-        if (!inmuebleEncontradoFlag) {
+        if (inmuebleEncontradoFlag) {
+            botonBorrarVisibilidad.setValue(View.VISIBLE);
+        } else {
             inmuebleEncontrado.setValue(null);
             mErrorMsj.setValue("El inmueble no existe");
         }
     }
 
-    /****************************************/
     public void borrarInmueble() {
         Inmueble inmueble = inmuebleEncontrado.getValue(); // Obtén el inmueble actual
         if (inmueble != null) {
@@ -78,6 +75,7 @@ public class BorrarViewModel extends AndroidViewModel {
             if (eliminado) {
                 inmuebleEliminado.setValue(true);
                 mErrorMsj.setValue("Inmueble eliminado");
+                botonBorrarVisibilidad.setValue(View.GONE);
             } else {
                 mErrorMsj.setValue("Error al eliminar el inmueble");
             }
@@ -85,6 +83,4 @@ public class BorrarViewModel extends AndroidViewModel {
             mErrorMsj.setValue("Inmueble no encontrado");
         }
     }
-
-
 }
